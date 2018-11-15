@@ -1,12 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import {Scene, Router} from 'react-native-router-flux';
+import fileManager from './src/fileManager';
+import Graph from './src/Graph';
 
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+      <Router>
+        <Scene key="root" hideNavBar={true}>
+          <Scene key="fileManager" component={fileManager} title="file manager page"/>
+          <Scene key="graph" component={Graph} title="Graph page"/>
+        </Scene>
+      </Router>
     );
   }
 }
