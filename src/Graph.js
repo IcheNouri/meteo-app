@@ -8,7 +8,6 @@
 
 import React, {Component} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import MyHeader from './MyHeader';
 import ChartView from 'react-native-highcharts';
 
 type Props = {};
