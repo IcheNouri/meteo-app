@@ -22,9 +22,23 @@ export default class fileManager extends Component<Props> {
   };
 
   componentDidMount() {
-    this.props.files = this.state.files
-    const res = FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + `/uploaded/`)
-    console.log(res);
+    this.props.files = this.state.file
+    this.init()
+  }
+
+  init = async () =>{
+    const path = FileSystem.documentDirectory + `/uploaded/`
+     let exists = await FileSystem.getInfoAsync(path)
+    
+      if (!exists) {
+         await FileSystem.makeDirectoryAsync(path)
+      } else {
+        let files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
+        await files.map(async file => {
+          this.state.files.push(file)
+          console.log('add in state: ', file)
+        })
+      }
   }
 
   getFileContent = async (uri) => {
@@ -48,15 +62,18 @@ export default class fileManager extends Component<Props> {
         console.log(date);
         await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + `/uploaded/${date}`, fileContent);
         alert('File uploaded successfully')
-        this.state.files.push({'date': date, type: 'NEW_FILE'})
+        this.getDocuments();
       }
+  }
+
+  getDocuments = async () => {
+    //return await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
   }
 
   removeFileFunc = async (file) => {
     try {
       await FileSystem.deleteAsync(FileSystem.documentDirectory + `/uploaded/${file}`);
       alert('File deleted successfully')
-      this.state.files.push({type: DELETE_FILE});
     } catch(e) {
       console.log(e);
     }
@@ -75,9 +92,11 @@ export default class fileManager extends Component<Props> {
   }
 
   renderList = () => {
-    const { files } = this.state;
-
-    if (files.length === 0) {
+    //const { files } = this.state;
+    const files = this.state.files = this.getDocuments();
+    console.log('state files: ' + this.state.files)
+    console.log('files: ' + files)
+    if (files.length !== 0) {
       return (
         <Box center f={1} mt={100}>
           <Text>No file uploaded</Text>
