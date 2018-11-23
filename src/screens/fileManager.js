@@ -7,9 +7,9 @@
  */
 
 import React, {Component} from 'react';
-import {View, StyleSheet, Button, TouchableOpacity, ScrollView, StatusBar} from 'react-native';
+import {View, StyleSheet, Button, Alert, ScrollView, StatusBar} from 'react-native';
 import { Actions } from 'react-native-router-flux';
-import { DocumentPicker, ImagePicker, FileSystem } from 'expo';
+import { DocumentPicker, ImagePicker, FileSystem, SQLite } from 'expo';
 import { Box, Text } from 'react-native-design-utility';
 import FileItem from '../components/FileItem';
 
@@ -33,20 +33,13 @@ export default class fileManager extends Component<Props> {
       if (!exists) {
          await FileSystem.makeDirectoryAsync(path)
       } else {
-        const tab = []
-        let files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
-        await files.map(async file => {
-          tab.push(file)
-          this.state.files = tab
-          console.log('add in state: ', tab)
-        })
+        this.getDocuments()
       }
   }
 
   getFileContent = async (uri) => {
     try {
       const fileResponse = await FileSystem.readAsStringAsync(uri)
-      console.log(fileResponse)
       return fileResponse
     } catch (error) {
       console.log(error)
@@ -69,24 +62,36 @@ export default class fileManager extends Component<Props> {
   }
 
   getDocuments = async () => {
-    //return await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
+    let files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
+    const tab = []
+    if (files.length === 0) {
+      this.setState({files: []})
+    } else {
+      await files.map(async file => {
+      tab.push(file)
+          this.setState({files: tab})
+          console.log('add in state: ', tab)
+      })
+    }
+
   }
 
-  removeFileFunc = async (file) => {
+  removeFileFunc = async (file, key) => {
     try {
       await FileSystem.deleteAsync(FileSystem.documentDirectory + `/uploaded/${file}`);
       alert('File deleted successfully')
+      this.getDocuments();
     } catch(e) {
       console.log(e);
     }
   }
 
-  removeConfirmationFunc = (file) => {
+  removeConfirmationFunc = (file, key) => {
     Alert.alert(
       'Delete',
-      'Are you sure to delete this file ?',
+      'Confirm delete ?',
       [
-        {text: 'Yes', onPress: () => this.removeFileFunc(file)},
+        {text: 'Yes', onPress: () => this.removeFileFunc(file, key)},
         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
       ],
       { cancelable: false }
@@ -95,8 +100,7 @@ export default class fileManager extends Component<Props> {
 
   renderList = () => {
     const { files } = this.state;
-    console.log(files)
-    if (files.length !== 0) {
+    if (files.length === 0) {
       return (
         <Box center f={1} mt={100}>
           <Text>No file uploaded</Text>
@@ -106,31 +110,18 @@ export default class fileManager extends Component<Props> {
 
     return (
       files.sort().map((file, i) => (
-        <FileItem key={i} file={file} removeConfirmation={this.removeConfirmationFunc} navigation={this.props.navigation} />
+        <FileItem key={i} file={file} removeConfirmation={this.removeConfirmationFunc} index={i} />
         ))
       );
   };
 
   render() {
     return (
-      <View>
-        <Text>
-        </Text>
-        <Button 
-          title="Go to graph"
-          onPress={() => {
-          Actions.graph()
-        }}> 
-        </Button>
-
+      <View style={styles.view}>
         <Button
           title="Select Document"
           onPress={this._pickDocument}
         />
-
-      <View style={{ 'marginTop': 20}}>
-        <Text></Text>
-      </View>
 
       <ScrollView>
         <StatusBar
@@ -147,8 +138,8 @@ export default class fileManager extends Component<Props> {
 
 
 const styles = StyleSheet.create({
-  loremStyle:{
-    padding: 10
+  view:{
+    marginBottom: 40
   },
   container: {
     flex: 1,

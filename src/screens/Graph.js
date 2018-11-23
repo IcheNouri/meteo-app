@@ -35,22 +35,27 @@ export default class Graph extends Component<Props> {
                   }
               },
               title: {
-                  text: 'Live random data'
-              },
-              xAxis: {
-                  type: 'datetime',
-                  tickPixelInterval: 150
+                  text: 'Humidity'
               },
               yAxis: {
-                  title: {
-                      text: 'Value'
-                  },
-                  plotLines: [{
-                      value: 0,
-                      width: 1,
-                      color: '#808080'
-                  }]
-              },
+                title: {
+                    text: 'Humidity in %'
+                    }
+                },
+                xAxis: {
+                    title: {
+                    text: 'Time in hours'
+                }
+            },
+            plotOptions: {
+                series: {
+                label: {
+                    connectorAllowed: false
+                },
+                    pointStart: 1
+                }
+            },
+
               tooltip: {
                   formatter: function () {
                       return '<b>' + this.series.name + '</b><br/>' +
@@ -62,25 +67,33 @@ export default class Graph extends Component<Props> {
                   enabled: false
               },
               exporting: {
-                  enabled: false
+                  enabled: true,
+                  filename: 'export-file'
               },
               series: [{
-                  name: 'Random data',
-                  data: (function () {
-                      // generate an array of random data
-                      var data = [],
-                          time = (new Date()).getTime(),
-                          i;
-  
-                      for (i = -19; i <= 0; i += 1) {
-                          data.push({
-                              x: time + i * 1000,
-                              y: Math.random()
-                          });
-                      }
-                      return data;
-                  }())
-              }]
+                    name: 'Maximum',
+                    data: [65, 40, 20, 5, 5, 42, 60, 33, 66, 10]
+                },
+                {
+                    name: 'Average',
+                    data: [50, 30, 20, 13, 18, 15, 3, 8, 10, 30]
+                },
+                {
+                    name: 'Minimum',
+                    data: [50, 40, 10, 0, 0, 19, 7, 2, 8, 50, 23]
+                },
+                {
+                    name: 'Day Maximum',
+                    data: [78, 78, 78, 78, 78, 78, 78, 78, 78, 78]
+                },
+                {
+                    name: 'Day Average',
+                    data: [37, 37, 37, 37, 37, 37, 37, 37, 37, 37]
+                },
+                {
+                    name: 'Day Minimum',
+                    data: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+                }]
           };
   
       const options = {
