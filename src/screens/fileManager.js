@@ -33,10 +33,12 @@ export default class fileManager extends Component<Props> {
       if (!exists) {
          await FileSystem.makeDirectoryAsync(path)
       } else {
+        const tab = []
         let files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory + '/uploaded/')
         await files.map(async file => {
-          this.state.files.push(file)
-          console.log('add in state: ', file)
+          tab.push(file)
+          this.state.files = tab
+          console.log('add in state: ', tab)
         })
       }
   }
@@ -92,10 +94,7 @@ export default class fileManager extends Component<Props> {
   }
 
   renderList = () => {
-    //const { files } = this.state;
-    const files = this.state.files = this.getDocuments();
-    console.log('state files: ' + this.state.files)
-    console.log('files: ' + files)
+    const { files } = this.state;
     if (files.length !== 0) {
       return (
         <Box center f={1} mt={100}>
