@@ -11,7 +11,7 @@ import {View, StyleSheet, Button, TouchableOpacity, ScrollView, StatusBar} from 
 import { Actions } from 'react-native-router-flux';
 import { DocumentPicker, ImagePicker, FileSystem } from 'expo';
 import { Box, Text } from 'react-native-design-utility';
-import fileItem from '../components/FileItem';
+import FileItem from '../components/FileItem';
 
 type Props = {};
 
@@ -21,7 +21,7 @@ export default class fileManager extends Component<Props> {
     files: [],
   };
 
-  componentDidMount() {
+  componentWillMount() {
     this.props.files = this.state.file
     this.init()
   }
@@ -95,6 +95,7 @@ export default class fileManager extends Component<Props> {
 
   renderList = () => {
     const { files } = this.state;
+    console.log(files)
     if (files.length !== 0) {
       return (
         <Box center f={1} mt={100}>

@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { Actions } from 'react-native-router-flux';
 
 
-class FileItem extends Component {
+export default class FileItem extends Component {
 
   render() {
     const { removeConfirmation, file } = this.props;
